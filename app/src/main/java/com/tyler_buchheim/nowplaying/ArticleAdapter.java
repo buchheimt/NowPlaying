@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import java.util.Date;
+import java.text.*;
 
 import java.util.ArrayList;
 
@@ -34,8 +36,20 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         TextView titleView = listItemView.findViewById(R.id.title);
         titleView.setText(currentArticle.getTitle());
 
-        // add authors and date fields as well
+        TextView authorsView = listItemView.findViewById(R.id.authors);
+        authorsView.setText(currentArticle.getAuthors());
+
+        Date publicationDate = currentArticle.getPublicationDate();
+        if (publicationDate != null) {
+            TextView publicationDateView = listItemView.findViewById(R.id.publication_date);
+            publicationDateView.setText(formatDate(publicationDate));
+        }
 
         return listItemView;
+    }
+
+    private String formatDate(Date dateObject) {
+        SimpleDateFormat format = new SimpleDateFormat("h:mm a - MMM dd, yyyy");
+        return format.format(dateObject);
     }
 }

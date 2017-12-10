@@ -5,7 +5,7 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import java.util.Date;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.text.*;
 
 public class QueryUtils {
 
@@ -96,7 +97,6 @@ public class QueryUtils {
                 line = reader.readLine();
             }
         }
-
         return output.toString();
     }
 
@@ -117,7 +117,41 @@ public class QueryUtils {
                 String section = articleJSON.getString("sectionName");
                 String title = articleJSON.getString("webTitle");
 
-                articles.add(new Article(section, title, null, null, null));
+                String authors = null;
+                try {
+                    JSONArray authorsJSON = articleJSON.getJSONArray("tags");
+                    StringBuilder authorsBuilder = new StringBuilder();
+                    for (int j = 0; j < authorsJSON.length(); j++) {
+                        JSONObject authorJSON = authorsJSON.getJSONObject(j);
+                        authorsBuilder.append(authorJSON.getString("webTitle"));
+                        authorsBuilder.append(", ");
+                    }
+                    authors = authorsBuilder.toString();
+                    authors = authors.substring(0, authors.length() - 2);
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "No authors for: " + articleJSON.toString());
+                }
+                if (authors == null) {
+                    authors = "Unknown";
+                }
+
+                Date publicationDate = null;
+                String publicationDateString = articleJSON.getString("webPublicationDate");
+                try {
+                    publicationDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").parse(publicationDateString);
+                } catch (ParseException e) {
+                    Log.e(LOG_TAG, "Date parsing error: " + publicationDateString);
+                }
+
+                String urlString = articleJSON.getString("webUrl");
+                URL url = null;
+                try {
+                    url = new URL(urlString);
+                } catch(MalformedURLException e) {
+                    Log.e(LOG_TAG, "There was an error formatting url: " + e);
+                }
+
+                articles.add(new Article(section, title, authors, publicationDate, url));
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, "There was an error during JSON parsing: " + e);

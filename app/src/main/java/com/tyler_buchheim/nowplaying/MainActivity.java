@@ -1,15 +1,17 @@
 package com.tyler_buchheim.nowplaying;
 
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,8 +27,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView articleListView = (ListView) findViewById(R.id.list);
-        final TextView emptyView = (TextView) findViewById(R.id.empty);
+        ListView articleListView = findViewById(R.id.list);
+        final TextView emptyView = findViewById(R.id.empty);
         mAdapter = new ArticleAdapter(this, new ArrayList<Article>());
 
         // Save state of scroll to preserve position on rotation
@@ -35,11 +37,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         articleListView.setAdapter(mAdapter);
         articleListView.setEmptyView(findViewById(R.id.empty));
 
+        // Set up intent to launch articles in browser on click
+        articleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Article currentArticle = mAdapter.getItem(position);
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(currentArticle.getUrl()));
+                startActivity(i);
+            }
+        });
+
         // Initialize loader if there is a connection or set empty view text
         final ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo initialNetworkInfo = connMgr.getActiveNetworkInfo();
         if (initialNetworkInfo != null && initialNetworkInfo.isConnected()) {
             getLoaderManager().initLoader(0, null, this);
+            findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
         } else {
             mAdapter.clear();
             emptyView.setText(R.string.no_connection);
@@ -47,9 +61,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // Restore scroll state on rotation
         articleListView.onRestoreInstanceState(state);
-
-        // Set up timer for refreshing and reloading articles
-
     }
 
     @Override
@@ -60,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<List<Article>> loader, List<Article> articles) {
         mAdapter.clear();
-        TextView emptyView = (TextView) findViewById(R.id.empty);
+        TextView emptyView = findViewById(R.id.empty);
 
         if (articles != null && !articles.isEmpty()) {
             mAdapter.addAll(articles);
@@ -75,5 +86,4 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoaderReset(Loader<List<Article>> loader) {
         mAdapter.clear();
     }
-
 }

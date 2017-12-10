@@ -143,13 +143,7 @@ public class QueryUtils {
                     Log.e(LOG_TAG, "Date parsing error: " + publicationDateString);
                 }
 
-                String urlString = articleJSON.getString("webUrl");
-                URL url = null;
-                try {
-                    url = new URL(urlString);
-                } catch(MalformedURLException e) {
-                    Log.e(LOG_TAG, "There was an error formatting url: " + e);
-                }
+                String url = articleJSON.getString("webUrl");
 
                 articles.add(new Article(section, title, authors, publicationDate, url));
             }

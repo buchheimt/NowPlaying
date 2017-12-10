@@ -1,6 +1,7 @@
 package com.tyler_buchheim.nowplaying;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -15,8 +16,11 @@ import java.util.ArrayList;
 
 public class ArticleAdapter extends ArrayAdapter<Article> {
 
+    private Context mContext;
+
     public ArticleAdapter(Activity context, ArrayList<Article> articles) {
         super(context, 0, articles);
+        mContext = context;
     }
 
     @NonNull
@@ -31,7 +35,14 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         Article currentArticle = getItem(position);
 
         TextView sectionView = listItemView.findViewById(R.id.section);
-        sectionView.setText(currentArticle.getSection());
+        String section = currentArticle.getSection();
+        if (section.equals("Film")) {
+            sectionView.setText(R.string.film);
+            sectionView.setBackgroundColor(mContext.getResources().getColor(R.color.filmPurple));
+        } else {
+            sectionView.setText(R.string.television);
+            sectionView.setBackgroundColor(mContext.getResources().getColor(R.color.televisionBlue));
+        }
 
         TextView titleView = listItemView.findViewById(R.id.title);
         titleView.setText(currentArticle.getTitle());

@@ -2,4 +2,6 @@
     <string name="app_name">Now Playing</string>
     <string name="no_results">No articles were found...</string>
     <string name="no_connection">No Internet Connection</string>
+    <string name="film">Film</string>
+    <string name="television">Television</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.tyler_buchheim.nowplaying;
 
-import java.net.URL;
 import java.util.Date;
 
 public class Article {
@@ -9,9 +8,9 @@ public class Article {
     private String mTitle;
     private String mAuthors;
     private Date mPublicationDate;
-    private URL mUrl;
+    private String mUrl;
 
-    public Article(String section, String title, String authors, Date publicationDate, URL url) {
+    public Article(String section, String title, String authors, Date publicationDate, String url) {
         mSection = section;
         mTitle = title;
         mAuthors = authors;
@@ -35,7 +34,7 @@ public class Article {
         return mPublicationDate;
     }
 
-    public URL getUrl() {
+    public String getUrl() {
         return mUrl;
     }
 }

@@ -138,7 +138,7 @@ public class QueryUtils {
                 Date publicationDate = null;
                 String publicationDateString = articleJSON.getString("webPublicationDate");
                 try {
-                    publicationDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").parse(publicationDateString);
+                    publicationDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(publicationDateString);
                 } catch (ParseException e) {
                     Log.e(LOG_TAG, "Date parsing error: " + publicationDateString);
                 }
